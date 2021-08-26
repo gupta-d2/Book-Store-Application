@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -57,6 +58,7 @@ public class BookDto {
 
     @ApiParam(required =true,value = "This is the book author")
     @JsonProperty(value = "author")
+    @Valid
     private AuthorDto authorDto;
 
     @NotNull(message = "launchDate is mandatory field")
