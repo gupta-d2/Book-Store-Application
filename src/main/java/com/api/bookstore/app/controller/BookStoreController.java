@@ -5,10 +5,7 @@ import com.api.bookstore.app.exception.BookStoreException;
 import com.api.bookstore.app.model.Image;
 import com.api.bookstore.app.response.Response;
 import com.api.bookstore.app.service.BookStoreService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,7 +53,7 @@ public class BookStoreController {
     }
     )
     @GetMapping(value = "{bookId}", name = "bookId")
-    public ResponseEntity<Response> getAllBooks(@PathVariable Integer bookId)
+    public ResponseEntity<Response> getAllBooks(@ApiParam(required = true,defaultValue = "10") @PathVariable Integer bookId)
     {
         BookDto bookDto=bookStoreService.getBookById(bookId);
         String responseMsg=  bookDto!=null ?"Fetched the book by Id":"No Books Found";
@@ -72,7 +69,10 @@ public class BookStoreController {
     }
     )
     @PostMapping
-    public ResponseEntity<Response> addBook(@Valid @RequestBody BookDto bookDto, BindingResult bindingResult) throws IOException {
+    public ResponseEntity<Response> addBook(@ApiParam(required = true,
+           // value ="{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"deada\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}" ,
+            example = "{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"edaxa\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}",
+            defaultValue = "{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"bookos\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}") @Valid @RequestBody BookDto bookDto, BindingResult bindingResult) throws IOException {
 
         if(bindingResult.hasErrors()) {
             Response response =new Response(HttpStatus.UNPROCESSABLE_ENTITY.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), "");
@@ -92,7 +92,7 @@ public class BookStoreController {
     }
     )
     @DeleteMapping(value = "{bookId}", name = "bookId")
-    public ResponseEntity<Response> deleteBook(@PathVariable Integer bookId) throws IOException {
+    public ResponseEntity<Response> deleteBook(@ApiParam(required = true,defaultValue = "12") @PathVariable Integer bookId) throws IOException {
 
 
         bookStoreService.deleteBookById(bookId);
@@ -126,7 +126,18 @@ public class BookStoreController {
     }
     )
     @PutMapping(value = "{bookId}")
-    public ResponseEntity<Response> updateBook(@ApiParam(required = true)  @PathVariable Integer bookId, @Valid @RequestBody BookDto bookDto, BindingResult bindingResult) {
+    public ResponseEntity<Response> updateBook(@ApiParam(
+            name =  "bookId",
+            value = "Book Id is required to update the book",
+            example = "123",
+
+            required = true)@PathVariable Integer bookId,
+           @ApiParam(
+                   name =  "book",
+                   value = "This is the Book Object",
+                   defaultValue = "{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"bookos\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}",
+                   required = true)
+           @Valid @RequestBody BookDto bookDto, BindingResult bindingResult) {
 
         if(bindingResult.hasErrors()) {
             Response response =new Response(HttpStatus.UNPROCESSABLE_ENTITY.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), "");

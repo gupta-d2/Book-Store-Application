@@ -17,12 +17,5 @@ public class BookStoreExceptionHandler {
 
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response> handleAllException(BookStoreException ex) {
-
-        Response error= new Response(ex.getErrorCode(),ex.getErrorMessage(),"");
-        return new ResponseEntity<Response>(error, HttpStatus.BAD_GATEWAY);
-
-    }
 }
 

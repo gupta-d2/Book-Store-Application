@@ -1,6 +1,7 @@
 package com.api.bookstore.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,8 +18,8 @@ import java.sql.Timestamp;
 @Entity
 public class Image {
 
-    @Id
 
+    @Id
     @Column(name="image_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer imageId;
@@ -29,7 +30,7 @@ public class Image {
 
     @Lob
     @Column(name="image")
-    @JsonIgnore
+    @ApiModelProperty(dataType = "java.lang.String", example = "76786hhj")
     private byte[] image;
 
     @Column(name = "create_time")

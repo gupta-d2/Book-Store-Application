@@ -18,9 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,18 +46,29 @@ public class BookStoreService {
         log.info("author: " + author);
 
         if (author != null) {
-            authorRepository.save(author);
+            author = authorRepository.save(author);
         }
         Book book = BookStoreUtil.getBookFromDto(bookDto);
         book.setAuthor(author);
         Book addedBook = bookRepository.save(
                 new Book(book.getBookId(), book.getBookTitle(), book.getBookDescription(), book.getQuantity(),
-                        book.getPrice(), book.getAuthor(), book.getImage(), book.getLaunchDate()));
+                        book.getPrice(), book.getAuthor(), null, book.getLaunchDate()));
 
+        Set<Image> newImage =
+                bookDto.getImage().stream().map(image -> {
+                            image.setBookId(addedBook.getBookId());
+                            return image;
+                        }
+                ).collect(Collectors.toSet());
+
+        Set<Image> addedImages = imageRepository.saveAll(newImage).stream().collect(Collectors.toSet());
+        log.info("Added Image: " + addedImages);
+        addedBook.setAuthor(author);
+        addedBook.setImage(addedImages);
 
         log.info("Added Book: " + addedBook);
 
-        return BookStoreUtil.getBookDto(addedBook, author);
+        return BookStoreUtil.getBookDto(addedBook);
     }
 
 
@@ -101,12 +114,11 @@ public class BookStoreService {
 
         List<BookDto> bookDtoList = allBooks.stream()
                 .peek(System.out::println)
-
                 .map(book ->
                 {
 
                     return new BookDto(book.getBookId(), book.getBookTitle(), book.getBookDescription(), book.getQuantity(),
-                            book.getPrice(), book.getImage(), book.getAuthor(), book.getLaunchDate());
+                            book.getPrice(), book.getImage(), BookStoreUtil.getAuthor(book.getAuthor()), book.getLaunchDate());
 
                 })
                 .peek(System.out::println)
@@ -131,16 +143,27 @@ public class BookStoreService {
             book.setQuantity(bookDto.getQuantity());
             book.setLaunchDate(bookDto.getLaunchDate());
             Author author = book.getAuthor();
-            author.setFirstName(bookDto.getAuthor().getFirstName());
-            author.setLastName(bookDto.getAuthor().getLastName());
-            author.setEmail(bookDto.getAuthor().getEmail());
+            author.setFirstName(bookDto.getAuthorDto().getFirstName());
+            author.setLastName(bookDto.getAuthorDto().getLastName());
+            author.setEmail(bookDto.getAuthorDto().getEmail());
 
             book.setAuthor(author);
 
 
         }
 
-        bookRepository.save(book);
+        Book updatedBook = bookRepository.save(book);
+
+        Set<Image> newImage =
+                bookDto.getImage().stream().map(image -> {
+                            image.setBookId(updatedBook.getBookId());
+                            return image;
+                        }
+                ).collect(Collectors.toSet());
+
+        Set<Image> addedImages = imageRepository.saveAll(newImage).stream().collect(Collectors.toSet());
+        log.info("Added Image: " + addedImages);
+
         return bookDto;
 
     }
@@ -157,7 +180,7 @@ public class BookStoreService {
                 {
 
                     return new BookDto(book.getBookId(), book.getBookTitle(), book.getBookDescription(), book.getQuantity(),
-                            book.getPrice(), book.getImage(), book.getAuthor(), book.getLaunchDate());
+                            book.getPrice(), book.getImage(), BookStoreUtil.getAuthor(book.getAuthor()), book.getLaunchDate());
 
                 })
                 .peek(System.out::println)
@@ -168,12 +191,11 @@ public class BookStoreService {
 
     public BookDto getBookById(Integer bookId) {
 
-        BookDto bookDto=null;
+
         Optional<Book> bookOptional = bookRepository.findById(bookId);
 
-        if(bookOptional.isPresent())
-        {
-           return BookStoreUtil.getBookDto(bookOptional.get(),bookOptional.get().getAuthor());
+        if (bookOptional.isPresent()) {
+            return BookStoreUtil.getBookDto(bookOptional.get(), bookOptional.get().getAuthor());
         }
 
         return null;
