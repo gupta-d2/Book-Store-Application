@@ -34,9 +34,19 @@ public class BookStoreController {
     }
     )
     @GetMapping()
-    public ResponseEntity<Response> getAllBooks(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                @RequestParam(defaultValue = "10") Integer pageSize,
-                                                @RequestParam(defaultValue = "bookId") String sortBy)
+    public ResponseEntity<Response> getAllBooks(
+            @ApiParam(
+                    value = "Page Number",
+                    required = true)
+            @RequestParam(defaultValue = "2") Integer pageNo,
+            @ApiParam(
+                    value = "Page Size",
+                    required = true)
+            @RequestParam(defaultValue = "5") Integer pageSize,
+            @ApiParam(
+                    value = "Sort By ",
+                    required = true)
+            @RequestParam(defaultValue = "bookId") String sortBy)
     {
         List<BookDto> bookDto=bookStoreService.getAllBooks(pageNo,pageSize,sortBy);
 
@@ -69,10 +79,7 @@ public class BookStoreController {
     }
     )
     @PostMapping
-    public ResponseEntity<Response> addBook(@ApiParam(required = true,
-           // value ="{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"deada\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}" ,
-            example = "{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"edaxa\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}",
-            defaultValue = "{\"author\":{\"email\":\"d2@gmai.com\",\"firstName\":\"dddd\",\"lastName\":\"ssss\"},\"bookDescription\":\"bookos\",\"bookId\":0,\"bookTitle\":\"s\",\"image\":[{\"imageId\":0}],\"launchDate\":\"2021-08-26T14:53:34.760Z\",\"price\":10,\"quantity\":1}") @Valid @RequestBody BookDto bookDto, BindingResult bindingResult) throws IOException {
+    public ResponseEntity<Response> addBook(@ApiParam(required = true) @Valid @RequestBody BookDto bookDto, BindingResult bindingResult) throws IOException {
 
         if(bindingResult.hasErrors()) {
             Response response =new Response(HttpStatus.UNPROCESSABLE_ENTITY.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), "");

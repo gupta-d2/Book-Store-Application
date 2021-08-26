@@ -41,7 +41,6 @@ public class BookStoreService {
     public BookDto addBook(BookDto bookDto) throws IOException {
 
         log.info("bookDto: " + bookDto);
-
         Author author = BookStoreUtil.getAuthorFromDto(bookDto);
         log.info("author: " + author);
 

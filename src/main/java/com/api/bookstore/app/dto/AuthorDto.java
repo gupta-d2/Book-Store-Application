@@ -22,7 +22,7 @@ public class AuthorDto {
     @JsonIgnore
     private Integer authorId;
 
-    @ApiModelProperty(required =true, value = "This is author first name", example = "J. K.")
+    @ApiModelProperty(required =true, value = "This is author first name", example = "JK")
     @NotBlank(message = "First name is mandatory field")
     @Pattern(regexp="[a-zA-Z][a-zA-Z ]*",message = "First name should contains only alphabets")
     private String firstName;
